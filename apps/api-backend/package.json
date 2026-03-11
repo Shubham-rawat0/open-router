@@ -1,0 +1,21 @@
+{
+  "name": "api-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "db": "*",
+    "@anthropic-ai/sdk": "^0.74.0",
+    "@google/genai": "^1.41.0",
+    "elysia": "latest",
+    "openai": "^6.22.0"
+  }
+}

@@ -1,0 +1,50 @@
+import { prisma } from "db";
+import bcrypt from "bcrypt";
+
+export class AuthService {
+  static async signup(email: string, password: string): Promise<string> {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    return user.id.toString();
+  }
+
+  static async signin(
+    email: string,
+    password: string,
+  ): Promise<{ correctCredentials: boolean; userId?: string }> {
+    const user = await prisma.user.findFirst({
+      where: { email },
+    });
+
+    if (!user) {
+      return { correctCredentials: false };
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+
+    if (!isValid) {
+      return { correctCredentials: false };
+    }
+
+    return {
+      correctCredentials: true,
+      userId: user.id.toString(),
+    };
+  }
+
+  static async getUserDetails(id: number) {
+    return prisma.user.findFirst({
+      where: { id },
+      select: {
+        credits: true,
+      },
+    });
+  }
+}
