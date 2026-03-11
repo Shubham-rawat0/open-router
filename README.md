@@ -1,135 +1,220 @@
-# Turborepo starter
+# OpenRouter – Multi-Provider LLM Gateway
 
-This Turborepo starter is maintained by the Turborepo core team.
+OpenRouter is a scalable backend service that provides a unified API to interact with multiple Large Language Model (LLM) providers such as OpenAI, Claude, Gemini, and others.  
+The system is designed with reliability, provider failover, credit management, and clean architecture in mind, making it suitable for building production-grade AI applications.
 
-## Using this example
+---
 
-Run the following command:
+## Features
 
-```sh
-npx create-turbo@latest
-```
+### 🤖 Multi-Provider LLM Support
+- Unified interface for multiple LLM providers
+- Currently supports:
+  - OpenAI
+  - Claude
+  - Gemini
+  - DeepSeek
+- Easily extensible to add new providers
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+### 🔄 Provider Failover
+- Automatic provider switching if one provider fails
+- Improves reliability and uptime
+- Ensures requests are completed even when a provider is unavailable
 
-### Apps and Packages
+---
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### 💳 Credit & Usage Management
+- Tracks user credits
+- Deducts credits per request
+- Prevents usage when credits are exhausted
+- Designed for SaaS-style AI APIs
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+---
 
-### Utilities
+### 🔐 Authentication & API Keys
+- Secure API key based authentication
+- Users can create and manage API keys
+- Each request is validated using API keys
 
-This Turborepo has some additional tools already setup for you:
+---
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### ⚡ Transaction Safety
+- Database transactions ensure:
+  - Atomic credit deduction
+  - Request tracking
+  - Data consistency
 
-### Build
+---
 
-To build all apps and packages, run the following command:
+### 📊 Request Logging
+- Logs every LLM request
+- Stores provider used
+- Stores responses and metadata
+- Helps debugging and analytics
 
-```
-cd my-turborepo
+---
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+## Tech Stack
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
+### Backend
+- Node.js
+- Express
+- TypeScript
+- Prisma ORM
+- PostgreSQL
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### LLM Providers
+- OpenAI
+- Claude (Anthropic)
+- Gemini (Google)
+- DeepSeek
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+### Database
+- PostgreSQL
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+### Infrastructure
+- Turborepo (Monorepo architecture)
+- Environment-based configuration
+- Modular provider architecture
 
-### Develop
+---
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+## Project Structure
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+openrouter
+│
+├── apps
+│   ├── api-backend          
+│   └── dashboard-frontend   
+|   └── primary-backend
+│
+├── packages
+│   ├── db                   
+│   └── config              
+│
+└── turbo.json              
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+---
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## How It Works
+
+### 1️⃣ API Request
+
+Client sends a request to the OpenRouter API with:
+
+- API Key
+- Model name
+- Prompt / messages
+
+---
+
+### 2️⃣ Authentication
+
+The system:
+
+- Validates API key
+- Fetches associated user
+- Checks remaining credits
+
+---
+
+### 3️⃣ Provider Selection
+
+The router selects the appropriate provider based on:
+
+- Requested model
+- Provider availability
+- Failover logic
+
+---
+
+### 4️⃣ Provider Execution
+
+Request is sent to the provider:
+
+- OpenAI
+- Claude
+- Gemini
+- DeepSeek
+
+If a provider fails, the router automatically switches to another provider.
+
+---
+
+### 5️⃣ Response Handling
+
+The system:
+
+- Stores request metadata
+- Deducts user credits
+- Returns the LLM response to the client
+
+---
+
+## Run Locally
+
+### Prerequisites
+
+- Node.js (v18+)
+- PostgreSQL
+- Git
+
+---
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/openrouter.git
+cd openrouter
+```
+
+---
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+or
+
+```bash
+pnpm install
+```
+
+---
+
+### Setup Environment Variables
+
+Create a `.env` file in the backend:
 
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+DATABASE_URL=
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+GEMINI_API_KEY=
+DEEPSEEK_API_KEY=
+JWT_SECRET=
 ```
 
-## Useful Links
+---
 
-Learn more about the power of Turborepo:
+### Run Database Migration
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+```bash
+npx prisma migrate dev
+```
+
+---
+
+### Start the Development Server
+
+```bash
+npm run dev
+```
+
+---
